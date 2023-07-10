@@ -14,10 +14,7 @@ logging.basicConfig(
 
 
 def main():
-    data_raw = ['Av. fermin vivceta 3780 conchali',
-                'Av Fermin vivaceta 3750 conchali',
-                'Nahuelbuta 1407 conchali',
-                'Av francia 1176 independencia']
+    data_raw = []
 
     gTransform = GoogleTransform()
 
