@@ -5,19 +5,20 @@ from config import CONFIG_GOOGLE
 from typing import List
 from model import TypeResult
 from .abstract_transform import AbstractTransform
+from pandas import DataFrame
 
 
 class GoogleTransform(AbstractTransform):
     key_route = CONFIG_GOOGLE['route_key']
 
-    def create_distance_matrix(self, data_raw: List[str], type_matrix: TypeResult) -> List[List[int]]:
+    def create_distance_matrix(self, data_raw: DataFrame, type_matrix: TypeResult) -> List[List[int]]:
         """
 
         :param type_matrix:
         :param data_raw:
         :return:
         """
-        addresses = [item.lower().replace(' ', '+') for item in data_raw]
+        addresses = [item.lower().replace(' ', '+') for item in data_raw['Direccion']]
         # Distance Matrix API only accepts 100 elements per request, so get rows in multiple requests.
         max_elements = 100
         num_addresses = len(addresses)  # 16 in this example.

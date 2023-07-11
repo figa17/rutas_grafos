@@ -4,3 +4,4 @@ example.py
 .idea
 example.py
 vs_code/
+*.pyc

@@ -1,25 +1,29 @@
 import logging
 from transform import GoogleTransform
 from solver import RouteSolver
+from model import TypeResult
+import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s %(name)s %(funcName)s- %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S',
     handlers=[
-        logging.FileHandler('log/route.log'),
+        #logging.FileHandler('log/route.log'),
         logging.StreamHandler()
     ]
 )
 
 
 def main():
-    data_raw = []
+
+    data_raw = pd.read_csv('data/data.csv', sep=';')
 
     gTransform = GoogleTransform()
 
     logging.info('main')
-    distance_matrix = gTransform.create_distance_matrix(data_raw)
+    distance_matrix = gTransform.create_distance_matrix(data_raw, type_matrix=TypeResult.Distance)
+
     """
     Example distance matrix 
     
@@ -39,7 +43,7 @@ def main():
         [1972, 579, 1260, 987, 371, 999, 701, 2099, 600, 1162, 1200, 504, 0],
     ]
     """
-    solver = RouteSolver(data=distance_matrix, num_vehicles=1, index_depot=0)
+    solver = RouteSolver(distance_matrix=distance_matrix, num_vehicles=1, index_depot=0)
     solver.solve()
     solver.get_best()
 
