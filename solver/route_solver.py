@@ -10,7 +10,8 @@ import logging
 class RouteSolver(AbstractSolver):
     __solution: Assignment
 
-    def __init__(self, distance_matrix: List[List[int]], num_vehicles: int, index_depot: int, result_type: TypeResult = None):
+    def __init__(self, distance_matrix: List[List[int]], num_vehicles: int, index_depot: int,
+                 result_type: TypeResult = None):
         self.__num_data = len(distance_matrix)
         self.__num_vehicles = num_vehicles
         self.__type_result = result_type if result_type else TypeResult.Distance
@@ -19,7 +20,8 @@ class RouteSolver(AbstractSolver):
         self.__index_depot = index_depot
         # Create Routing Model.
         self.__routing = pywrapcp.RoutingModel(self.__manager)
-        logging.info(f'num_data: {self.__num_data}, num_vehicles: {self.__num_vehicles}, index_depot: {self.__index_depot}')
+        logging.info(
+            f'num_data: {self.__num_data}, num_vehicles: {self.__num_vehicles}, index_depot: {self.__index_depot}')
 
     def distance_callback(self, from_index, to_index):
         """Returns the distance between the two nodes."""
@@ -57,10 +59,9 @@ class RouteSolver(AbstractSolver):
         # # Print solution on console.
 
     def get_best(self) -> ResultSolver:
-        result_solver = ResultSolver()
-        result_solver.num_vehicles = self.__num_vehicles
-        result_solver.nodes = self.__num_data
-        result_solver.type_result = self.__type_result
+        result_solver = ResultSolver(num_vehicles=self.__num_vehicles,
+                                     nodes=self.__num_data,
+                                     type_result=self.__type_result)
 
         if self.__solution:
             max_route_distance = 0
