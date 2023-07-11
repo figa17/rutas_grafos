@@ -60,7 +60,7 @@ class RouteSolver(AbstractSolver):
 
     def get_best(self) -> ResultSolver:
         result_solver = ResultSolver(num_vehicles=self.__num_vehicles,
-                                     nodes=self.__num_data,
+                                     nodes=self.__distance_matrix[0],
                                      type_result=self.__type_result)
 
         if self.__solution:

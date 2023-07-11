@@ -12,7 +12,6 @@ logging.basicConfig(
 
 
 def main():
-
     data_raw = pd.read_csv('data/data.csv', sep=';')
 
     gTransform = GoogleTransform()
@@ -42,6 +41,7 @@ def main():
     solver = RouteSolver(distance_matrix=distance_matrix, num_vehicles=1, index_depot=0)
     solver.solve()
     solver.get_best()
+
 
 if __name__ == '__main__':
     main()
