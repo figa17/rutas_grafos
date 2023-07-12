@@ -34,7 +34,7 @@ class GoogleTransform(AbstractTransform):
             response = self.send_request(origin_addresses, dest_addresses)
             distance_matrix += self.build_distance_matrix(response, type_matrix)
 
-        # Get the remaining remaining r rows, if necessary.
+        # Get the remaining  r rows, if necessary.
         if r > 0:
             origin_addresses = addresses[q * max_rows: q * max_rows + r]
             response = self.send_request(origin_addresses, dest_addresses)

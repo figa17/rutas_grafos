@@ -5,3 +5,5 @@ example.py
 example.py
 vs_code/
 *.pyc
+*.gv
+*.png

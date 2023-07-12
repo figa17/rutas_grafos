@@ -2,7 +2,9 @@ import logging
 from transform import GoogleTransform
 from solver import RouteSolver
 from model import TypeResult
+from util import draw_graph_distance
 import pandas as pd
+from os import path
 
 logging.basicConfig(
     level=logging.INFO,
@@ -10,14 +12,25 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
+MATRIX_NAME_FILE_PATH = 'data/matrix.csv'
+
 
 def main():
     data_raw = pd.read_csv('data/data.csv', sep=';')
 
-    gTransform = GoogleTransform()
-
     logging.info('main')
-    distance_matrix = gTransform.create_distance_matrix(data_raw, type_matrix=TypeResult.Distance)
+
+    if not path.isfile(MATRIX_NAME_FILE_PATH):
+        logging.info('No existe archivo con datos')
+        gTransform = GoogleTransform()
+        distance_matrix = gTransform.create_distance_matrix(data_raw, type_matrix=TypeResult.Distance)
+        data = pd.DataFrame(distance_matrix)
+        data.to_csv(MATRIX_NAME_FILE_PATH, sep=';', float_format='%.4f')
+        logging.info('Escribiendo datas en archivo csv.')
+    else:
+        distance_matrix = pd.read_csv(MATRIX_NAME_FILE_PATH, sep=';', index_col=0)
+
+    draw_graph_distance(distance_matrix, data_raw)
 
     """
     Example distance matrix 
