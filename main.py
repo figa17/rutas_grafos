@@ -1,8 +1,8 @@
 import logging
-from transform import GoogleTransform
+from transform import GoogleTransform, GeoTransform
 from solver import RouteSolver
 from model import TypeResult
-from util import draw_graph_distance
+from util import draw_graph_distance, add_result
 import pandas as pd
 from os import path
 
@@ -22,7 +22,7 @@ def main():
 
     if not path.isfile(MATRIX_NAME_FILE_PATH):
         logging.info('No existe archivo con datos')
-        gTransform = GoogleTransform()
+        gTransform = GeoTransform()
         distance_matrix = gTransform.create_distance_matrix(data_raw, type_matrix=TypeResult.Distance)
         data = pd.DataFrame(distance_matrix)
         data.to_csv(MATRIX_NAME_FILE_PATH, sep=';', float_format='%.4f')
@@ -30,7 +30,7 @@ def main():
     else:
         distance_matrix = pd.read_csv(MATRIX_NAME_FILE_PATH, sep=';', index_col=0)
 
-    draw_graph_distance(distance_matrix, data_raw)
+    draw = draw_graph_distance(distance_matrix, data_raw)
 
     """
     Example distance matrix 
@@ -53,7 +53,11 @@ def main():
     """
     solver = RouteSolver(distance_matrix=distance_matrix, num_vehicles=1, index_depot=0)
     solver.solve()
-    solver.get_best()
+    #  GoogleTransform get_best- [0, 5, 3, 1, 10, 6, 15, 11, 4, 9, 7, 13, 8, 2, 14, 12, 0]
+    #  GeoTransform    get_best- [0, 12, 14, 8, 2, 11, 9, 15, 1, 4, 5, 6, 7, 3, 13, 10, 0]
+    result = solver.get_best()
+
+    add_result(draw, result)
 
 
 if __name__ == '__main__':

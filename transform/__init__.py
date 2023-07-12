@@ -1,3 +1,3 @@
-from .route_transform import GoogleTransform
+from .route_transform import GoogleTransform, GeoTransform
 
-__all__ = ['GoogleTransform']
+__all__ = ['GoogleTransform', 'GeoTransform']

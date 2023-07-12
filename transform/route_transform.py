@@ -6,6 +6,7 @@ from typing import List
 from model import TypeResult
 from .abstract_transform import AbstractTransform
 from pandas import DataFrame
+import geopandas as gpd
 
 
 class GoogleTransform(AbstractTransform):
@@ -78,3 +79,19 @@ class GoogleTransform(AbstractTransform):
             address_str += addresses[i] + '|'
         address_str += addresses[-1]
         return address_str
+
+
+class GeoTransform(AbstractTransform):
+
+    def create_distance_matrix(self, data_raw: DataFrame, type_matrix: TypeResult) -> List[List[int]]:
+        geo_data = gpd.GeoDataFrame(
+            data_raw[['Latitud', 'Longitud']],
+            geometry=gpd.points_from_xy(data_raw['Latitud'], data_raw['Longitud']),
+            crs='EPSG:4326'
+        )
+
+        distance = []
+        for _, row in geo_data.iterrows():
+            distance.append(geo_data['geometry'].distance(row['geometry']) * 100)
+
+        return distance
