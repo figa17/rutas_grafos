@@ -7,3 +7,4 @@ vs_code/
 *.pyc
 *.gv
 *.png
+config/config.py
