@@ -63,30 +63,30 @@ class RouteSolver(AbstractSolver):
                                      nodes=self.__distance_matrix[0],
                                      type_result=self.__type_result)
 
-        if self.__solution:
-            max_route_distance = 0
-            t_paths = []
-            for vehicle_id in range(self.__num_vehicles):
-
-                index = self.__routing.Start(vehicle_id)
-                plan_output = []
-                route_distance = 0
-                while not self.__routing.IsEnd(index):
-                    plan_output.append(self.__manager.IndexToNode(index))
-                    previous_index = index
-                    index = self.__solution.Value(self.__routing.NextVar(index))
-                    route_distance += self.__routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
-                plan_output.append(self.__index_depot)
-                v_path = VehiclePath(index=vehicle_id, path=plan_output)
-                logging.info(plan_output)
-                max_route_distance = max(route_distance, max_route_distance)
-                t_paths.append(v_path)
-
-            result_solver.result_path = t_paths
-            result_solver.total = max_route_distance
-
-            return result_solver
-        else:
+        if not self.__solution:
             result_solver.result_path = []
             result_solver.total = 0
             return result_solver
+
+        max_route_distance = 0
+        t_paths = []
+        for vehicle_id in range(self.__num_vehicles):
+
+            index = self.__routing.Start(vehicle_id)
+            plan_output = []
+            route_distance = 0
+            while not self.__routing.IsEnd(index):
+                plan_output.append(self.__manager.IndexToNode(index))
+                previous_index = index
+                index = self.__solution.Value(self.__routing.NextVar(index))
+                route_distance += self.__routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
+            plan_output.append(self.__index_depot)
+            v_path = VehiclePath(index=vehicle_id, path=plan_output)
+            logging.info(plan_output)
+            max_route_distance = max(route_distance, max_route_distance)
+            t_paths.append(v_path)
+
+        result_solver.result_path = t_paths
+        result_solver.total = max_route_distance
+
+        return result_solver
