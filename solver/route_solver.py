@@ -2,7 +2,7 @@ from ortools.constraint_solver.pywrapcp import Assignment
 from model import ResultSolver, TypeResult, VehiclePath
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
-from typing import List
+from pandas import DataFrame
 from .abstract_solver import AbstractSolver
 import logging
 
@@ -10,16 +10,18 @@ import logging
 class RouteSolver(AbstractSolver):
     __solution: Assignment
 
-    def __init__(self, distance_matrix: List[List[int]], num_vehicles: int, index_depot: int, result_type: TypeResult = None):
+    def __init__(self, distance_matrix: DataFrame, num_vehicles: int, index_depot: int,
+                 result_type: TypeResult = None):
         self.__num_data = len(distance_matrix)
         self.__num_vehicles = num_vehicles
         self.__type_result = result_type if result_type else TypeResult.Distance
-        self.__distance_matrix = distance_matrix
+        self.__distance_matrix = distance_matrix.values.tolist()
         self.__manager = pywrapcp.RoutingIndexManager(self.__num_data, num_vehicles, index_depot)
         self.__index_depot = index_depot
         # Create Routing Model.
         self.__routing = pywrapcp.RoutingModel(self.__manager)
-        logging.info(f'num_data: {self.__num_data}, num_vehicles: {self.__num_vehicles}, index_depot: {self.__index_depot}')
+        logging.info(
+            f'num_data: {self.__num_data}, num_vehicles: {self.__num_vehicles}, index_depot: {self.__index_depot}')
 
     def distance_callback(self, from_index, to_index):
         """Returns the distance between the two nodes."""
@@ -57,17 +59,15 @@ class RouteSolver(AbstractSolver):
         # # Print solution on console.
 
     def get_best(self) -> ResultSolver:
-        result_solver = ResultSolver()
-        result_solver.num_vehicles = self.__num_vehicles
-        result_solver.nodes = self.__num_data
-        result_solver.type_result = self.__type_result
+        result_solver = ResultSolver(num_vehicles=self.__num_vehicles,
+                                     nodes=self.__distance_matrix[0],
+                                     type_result=self.__type_result)
 
         if self.__solution:
             max_route_distance = 0
             t_paths = []
             for vehicle_id in range(self.__num_vehicles):
-                v_path = VehiclePath()
-                v_path.index = vehicle_id
+
                 index = self.__routing.Start(vehicle_id)
                 plan_output = []
                 route_distance = 0
@@ -77,7 +77,7 @@ class RouteSolver(AbstractSolver):
                     index = self.__solution.Value(self.__routing.NextVar(index))
                     route_distance += self.__routing.GetArcCostForVehicle(previous_index, index, vehicle_id)
                 plan_output.append(self.__index_depot)
-                v_path.path = plan_output
+                v_path = VehiclePath(index=vehicle_id, path=plan_output)
                 logging.info(plan_output)
                 max_route_distance = max(route_distance, max_route_distance)
                 t_paths.append(v_path)

@@ -2,27 +2,35 @@ import logging
 from transform import GoogleTransform
 from solver import RouteSolver
 from model import TypeResult
+from util import draw_graph_distance
 import pandas as pd
+from os import path
 
 logging.basicConfig(
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s %(name)s %(funcName)s- %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    handlers=[
-        #logging.FileHandler('log/route.log'),
-        logging.StreamHandler()
-    ]
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
+
+MATRIX_NAME_FILE_PATH = 'data/matrix.csv'
 
 
 def main():
-
     data_raw = pd.read_csv('data/data.csv', sep=';')
 
-    gTransform = GoogleTransform()
-
     logging.info('main')
-    distance_matrix = gTransform.create_distance_matrix(data_raw, type_matrix=TypeResult.Distance)
+
+    if not path.isfile(MATRIX_NAME_FILE_PATH):
+        logging.info('No existe archivo con datos')
+        gTransform = GoogleTransform()
+        distance_matrix = gTransform.create_distance_matrix(data_raw, type_matrix=TypeResult.Distance)
+        data = pd.DataFrame(distance_matrix)
+        data.to_csv(MATRIX_NAME_FILE_PATH, sep=';', float_format='%.4f')
+        logging.info('Escribiendo datas en archivo csv.')
+    else:
+        distance_matrix = pd.read_csv(MATRIX_NAME_FILE_PATH, sep=';', index_col=0)
+
+    draw_graph_distance(distance_matrix, data_raw)
 
     """
     Example distance matrix 
@@ -46,6 +54,7 @@ def main():
     solver = RouteSolver(distance_matrix=distance_matrix, num_vehicles=1, index_depot=0)
     solver.solve()
     solver.get_best()
+
 
 if __name__ == '__main__':
     main()
