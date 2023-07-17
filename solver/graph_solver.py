@@ -13,6 +13,16 @@ class GraphSolver(AbstractSolver):
         self.__best = None
 
     def solve(self):
+        """
+
+        :return:
+
+        References
+        ----------
+        .. [1] Christofides, Nicos. "Worst-case analysis of a new heuristic for
+        the travelling salesman problem." No. RR-388. Carnegie-Mellon Univ
+        Pittsburgh Pa Management Sciences Research Group, 1976.
+        """
         self.__best = nx_app.christofides(self.__graph, weight="weight")
 
     def get_best(self) -> ResultSolver:
