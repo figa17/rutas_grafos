@@ -1,6 +1,6 @@
 import logging
-from transform import GoogleTransform, GeoTransform
-from solver import RouteSolver
+from transform import GoogleTransform, GeoTransform, GraphTransform
+from solver import RouteSolver, GraphSolver
 from model import TypeResult
 from util import draw_graph_distance, add_result
 import pandas as pd
@@ -30,7 +30,7 @@ def main():
     else:
         distance_matrix = pd.read_csv(MATRIX_NAME_FILE_PATH, sep=';', index_col=0)
 
-    draw = draw_graph_distance(distance_matrix, data_raw)
+    # draw = draw_graph_distance(distance_matrix, data_raw)
 
     """
     Example distance matrix 
@@ -51,13 +51,21 @@ def main():
         [1972, 579, 1260, 987, 371, 999, 701, 2099, 600, 1162, 1200, 504, 0],
     ]
     """
-    solver = RouteSolver(distance_matrix=distance_matrix, num_vehicles=1, index_depot=0)
-    solver.solve()
+    # solver = RouteSolver(distance_matrix=distance_matrix, num_vehicles=1, index_depot=0)
+    # solver.solve()
     #  GoogleTransform get_best- [0, 5, 3, 1, 10, 6, 15, 11, 4, 9, 7, 13, 8, 2, 14, 12, 0]
     #  GeoTransform    get_best- [0, 12, 14, 8, 2, 11, 9, 15, 1, 4, 5, 6, 7, 3, 13, 10, 0]
-    result = solver.get_best()
+    #  nx                        [0, 10, 13, 9, 4, 15, 1, 5, 11, 6, 7, 3, 2, 14, 8, 12, 0]
+    # result = solver.get_best()
 
-    add_result(draw, result)
+    # add_result(draw, result)
+
+    graph_transform = GraphTransform()
+    graph = graph_transform.create_graph(distance_matrix)
+    solver = GraphSolver(graph)
+    solver.solve()
+    result = solver.get_best()
+    print(result.result_path)
 
 
 if __name__ == '__main__':

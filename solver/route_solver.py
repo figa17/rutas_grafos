@@ -23,7 +23,7 @@ class RouteSolver(AbstractSolver):
         logging.info(
             f'num_data: {self.__num_data}, num_vehicles: {self.__num_vehicles}, index_depot: {self.__index_depot}')
 
-    def distance_callback(self, from_index, to_index):
+    def __distance_callback(self, from_index, to_index):
         """Returns the distance between the two nodes."""
         # Convert from routing variable Index to distance matrix NodeIndex.
         from_node = self.__manager.IndexToNode(from_index)
@@ -31,7 +31,7 @@ class RouteSolver(AbstractSolver):
         return self.__distance_matrix[from_node][to_node]
 
     def solve(self):
-        transit_callback_index = self.__routing.RegisterTransitCallback(self.distance_callback)
+        transit_callback_index = self.__routing.RegisterTransitCallback(self.__distance_callback)
 
         # Define cost of each arc.
         self.__routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)

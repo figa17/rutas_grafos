@@ -6,9 +6,9 @@ from model import ResultSolver
 class AbstractSolver(ABC):
 
     @abstractmethod
-    def solve(self) -> List:
-        pass
+    def solve(self) -> None:
+        raise NotImplemented('Not implemented solver')
 
     @abstractmethod
     def get_best(self) -> ResultSolver:
-        pass
+        raise NotImplemented('Not implemented solver')

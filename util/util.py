@@ -18,7 +18,7 @@ def draw_graph_distance(distance_matrix: DataFrame, data: DataFrame):
                 logging.info(f'node {index} -> node {i} ==> distance: {row[i]}')
                 graph.edge(f'node {index}', f'node {i}', label=str(row[i]))
 
-    graph.render(filename='di_graph', directory='data', overwrite_source=True)
+    graph.render(directory='data', overwrite_source=True)
     return graph
 
 
@@ -28,6 +28,6 @@ def add_result(graph: graphviz.Graph, result: ResultSolver):
     total_dest = len(route)
     for i in range(total_dest):
         if i + 1 < total_dest:
-            graph.edge(f'node {route[i]}', f'node {route[i + 1]}', color="red")
+            graph.edge(f'node {route[i]+1}', f'node {route[i + 1]}', color="red")
 
     graph.render(filename='di_graph_result', directory='data', overwrite_source=True)
